@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwXFPTqyw6jrE1bpaGEePU3k3Yluwxy1I54AQcNELYuh1NBsL6BHB8FRuSHqaiOMR5H/exec'; 
     
     // For demo purposes, we will mock the backend response
-    const USE_MOCK_BACKEND = true; 
+    const USE_MOCK_BACKEND = false; 
 
     spinBtn.addEventListener('click', async () => {
         const code = serialInput.value.trim();
