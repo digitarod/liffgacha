@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Replace this with the deployed Web App URL from Google Apps Script
-    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwXFPTqyw6jrE1bpaGEePU3k3Yluwxy1I54AQcNELYuh1NBsL6BHB8FRuSHqaiOMR5H/exec'; 
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycby7mSuby92_nBZyFrRdQ5LtXtbIpVKMJOguPHjyuH3E_XezhYexXAI7zIWneLLlvpRd/exec'; 
     
     // For demo purposes, we will mock the backend response
     const USE_MOCK_BACKEND = false; 
