@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const MY_LIFF_ID = '2006502233-yq0x2pDd';
 
     // 1. Google Apps Scriptをデプロイして発行されたURLをここに貼り付けてください。
-    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz92q3NJsQ4_0Pdv-6kb5FJmoUUITZt-PeNKmUQyQ42ArOH9_EGqMFLiqvvx05-q-_pxw/exec'; 
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxL-jhXdS5SEjOSFJbPhw1h9pnAWQ0Q0XzIdjx5hXD4OgS0uAA2xvSCCNzxwmIrTRlcfA/exec'; 
 
     // 3. 本番通信を行う場合は false に、デモ（テスト）の場合は true にしてください。
     const USE_MOCK_BACKEND = false;
