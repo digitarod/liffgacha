@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 result = await mockBackend(code);
             } else {
                 // Real implementation
-                // const response = await fetch(`${GAS_API_URL}?code=${code}`);
-                // result = await response.json();
+                const response = await fetch(`${GAS_API_URL}?code=${code}`);
+                result = await response.json();
             }
 
             // Artificial delay for suspense (e.g. 2 seconds)
