@@ -15,11 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
         winEffect: 'assets/win_effect.png'
     };
 
-    // Replace this with the deployed Web App URL from Google Apps Script
-    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz92q3NJsQ4_0Pdv-6kb5FJmoUUITZt-PeNKmUQyQ42ArOH9_EGqMFLiqvvx05-q-_pxw/exec'; 
     
-    // For demo purposes, we will mock the backend response
-    const USE_MOCK_BACKEND = false; 
+    // -----------------------------------------------------------------
+    // ★ IMPORTANT: 設定エリア
+    // -----------------------------------------------------------------
+    // 1. Google Apps Scriptをデプロイして発行されたURLをここに貼り付けてください。
+    const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz92q3NJsQ4_0Pdv-6kb5FJmoUUITZt-PeNKmUQyQ42ArOH9_EGqMFLiqvvx05-q-_pxw/exec'; 
+
+    // 2. 本番通信を行う場合は false に、デモ（テスト）の場合は true にしてください。
+    const USE_MOCK_BACKEND = false;
+    // -----------------------------------------------------------------
 
     spinBtn.addEventListener('click', async () => {
         const code = serialInput.value.trim();
@@ -39,11 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Call Backend
             let result;
             if (USE_MOCK_BACKEND) {
+                console.log("現在デモモードで動作中...");
                 result = await mockBackend(code);
             } else {
-                // Real implementation
+                if (!GAS_API_URL) {
+                    throw new Error('API URLが設定されていません。script.jsを確認してください。');
+                }
                 const response = await fetch(`${GAS_API_URL}?code=${code}`);
                 result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
             }
 
             // Artificial delay for suspense (e.g. 2 seconds)
@@ -54,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Flash Effect
             flashOverlay.classList.add('flashing');
-            
+
             // Switch to Open Box immediately after flash starts
             setTimeout(() => {
                 treasureBox.src = ASSETS.boxOpen;
@@ -70,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             alert('エラーが発生しました: ' + error.message);
             resetUI();
+            treasureBox.classList.remove('shaking'); // Ensure shaking stops on error
         }
     });
 
@@ -79,14 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showResult(data) {
         resultContent.innerHTML = '';
-        
+
         if (data.status === 'win') {
             // SSR Result
             const img = document.createElement('img');
             img.src = ASSETS.winEffect;
             img.className = 'result-image';
             resultContent.appendChild(img);
-            
+
             const text = document.createElement('div');
             text.className = 'result-text';
             text.textContent = 'SSR 獲得！';
@@ -136,10 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetUI() {
         // Reset Box
         treasureBox.src = ASSETS.boxClosed;
-        
+
         // Hide Modal
         resultModal.classList.add('hidden');
-        
+
         // Enable Controls
         spinBtn.disabled = false;
         serialInput.disabled = false;
@@ -149,21 +161,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mock Backend for Logic Verification
     async function mockBackend(code) {
         // Simulate network delay
+        await new Promise(r => setTimeout(r, 1000));
+
         // Check "Mock" logic
         if (code === 'SSR') {
             return {
                 status: 'win',
                 prizeName: 'アルマンド・ゴールド'
             };
-        } else if (code === 'ERROR') {
-            throw new Error('無効なコードです');
-        } else {
+        } else if (code.startsWith('TEST')) {
             return {
                 status: 'lose',
                 pointsAdded: 1,
                 currentPoints: Math.floor(Math.random() * 40),
                 targetPoints: 50
             };
+        } else {
+            // Default: Make it error to allow user to understand it's a mock
+            throw new Error('デモモード: 無効なシリアルコードです (テスト用コード: "SSR" または "TEST...")');
         }
     }
 });
