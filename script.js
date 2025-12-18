@@ -15,10 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         winEffect: 'assets/win_effect.png'
     };
 
-    
-    // -----------------------------------------------------------------
-    // ★ IMPORTANT: 設定エリア
-    // -----------------------------------------------------------------
 
 
     // -----------------------------------------------------------------
@@ -35,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
 
     let currentUserId = 'anonymous';
+    let currentUserName = 'Guest';
 
     // LIFFの初期化
     async function initializeLiff() {
@@ -43,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (liff.isLoggedIn()) {
                 const profile = await liff.getProfile();
                 currentUserId = profile.userId;
-                console.log('LIFF Initialized. UserID:', currentUserId);
+                currentUserName = profile.displayName;
+                console.log('LIFF Initialized. User:', currentUserName, '(', currentUserId, ')');
             } else {
                 // 自動ログイン
                 liff.login();
@@ -91,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!GAS_API_URL) {
                     throw new Error('API URLが設定されていません。script.jsを確認してください。');
                 }
-                // userIdをパラメータに追加
-                const response = await fetch(`${GAS_API_URL}?code=${code}&userId=${currentUserId}`);
+                // userIdとuserNameをパラメータに追加
+                const response = await fetch(`${GAS_API_URL}?code=${code}&userId=${currentUserId}&userName=${encodeURIComponent(currentUserName)}`);
                 result = await response.json();
                 if (result.error) {
                     throw new Error(result.error);
