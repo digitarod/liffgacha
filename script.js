@@ -19,14 +19,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------------------------------
     // ★ IMPORTANT: 設定エリア
     // -----------------------------------------------------------------
+
+
+    // -----------------------------------------------------------------
+    // ★ IMPORTANT: 設定エリア
+    // -----------------------------------------------------------------
+    // 1. LINE Developersで発行したLIFF IDを入力してください
+    const MY_LIFF_ID = '2006502233-yq0x2pDd';
+
     // 1. Google Apps Scriptをデプロイして発行されたURLをここに貼り付けてください。
     const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz92q3NJsQ4_0Pdv-6kb5FJmoUUITZt-PeNKmUQyQ42ArOH9_EGqMFLiqvvx05-q-_pxw/exec'; 
 
-    // 2. 本番通信を行う場合は false に、デモ（テスト）の場合は true にしてください。
+    // 3. 本番通信を行う場合は false に、デモ（テスト）の場合は true にしてください。
     const USE_MOCK_BACKEND = false;
     // -----------------------------------------------------------------
 
+    let currentUserId = 'anonymous';
+
+    // LIFFの初期化
+    async function initializeLiff() {
+        try {
+            await liff.init({ liffId: MY_LIFF_ID });
+            if (liff.isLoggedIn()) {
+                const profile = await liff.getProfile();
+                currentUserId = profile.userId;
+                console.log('LIFF Initialized. UserID:', currentUserId);
+            } else {
+                // 自動ログイン
+                liff.login();
+            }
+        } catch (err) {
+            console.error('LIFF Initialization failed', err);
+        }
+    }
+
+    if (!USE_MOCK_BACKEND) {
+        initializeLiff();
+    }
+
     spinBtn.addEventListener('click', async () => {
+        // ボタンが「CLOSE」モードならLIFFを閉じる
+        if (spinBtn.textContent === 'CLOSE') {
+            if (liff.isInClient()) {
+                liff.closeWindow();
+            } else {
+                alert('ブラウザ版のため閉じません（本番のLINE内では閉じます）');
+            }
+            return;
+        }
+
         const code = serialInput.value.trim();
         if (!code) {
             alert('シリアルコードを入力してください');
@@ -50,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!GAS_API_URL) {
                     throw new Error('API URLが設定されていません。script.jsを確認してください。');
                 }
-                const response = await fetch(`${GAS_API_URL}?code=${code}`);
+                // userIdをパラメータに追加
+                const response = await fetch(`${GAS_API_URL}?code=${code}&userId=${currentUserId}`);
                 result = await response.json();
                 if (result.error) {
                     throw new Error(result.error);
@@ -75,6 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 showResult(result);
                 flashOverlay.classList.remove('flashing');
+
+                // ★ メインボタンを「CLOSE」に切り替え、有効化する
+                spinBtn.textContent = 'CLOSE';
+                spinBtn.disabled = false;
             }, 600);
 
         } catch (error) {
@@ -143,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resultModal.classList.remove('hidden');
         closeBtn.classList.remove('hidden');
+        closeBtn.textContent = 'CLOSE'; // モーダル内のボタンもシンプルな表示に
     }
 
     function resetUI() {
@@ -154,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Enable Controls
         spinBtn.disabled = false;
+        spinBtn.textContent = 'OPEN'; // 表示を戻す
         serialInput.disabled = false;
         serialInput.value = '';
     }
