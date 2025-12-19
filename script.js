@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         winEffect: 'assets/win_effect.png'
     };
 
-
-
     // -----------------------------------------------------------------
     // ★ IMPORTANT: 設定エリア
     // -----------------------------------------------------------------
@@ -97,8 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Artificial delay for suspense (e.g. 2 seconds)
-            await new Promise(r => setTimeout(r, 2000));
+            // Artificial delay for suspense (reduced for faster response)
+            await new Promise(r => setTimeout(r, 500));
 
             // Stop Shake
             treasureBox.classList.remove('shaking');
